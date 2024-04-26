@@ -73,6 +73,7 @@ gulp.task('sass:docs', function(){
         .pipe(plumber(plumberConfig('SCSS')))
         .pipe(autoprefixer())
         .pipe(sassGlob())
+        .pipe(groupMedia())
         .pipe(webpCss())
         .pipe(sass())
         .pipe(
@@ -82,7 +83,6 @@ gulp.task('sass:docs', function(){
 			)
 		)
         .pipe(csso())
-        .pipe(groupMedia())
         .pipe(gulp.dest('./docs/css/'))
 });
 
