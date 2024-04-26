@@ -12,6 +12,7 @@ const webpack = require('webpack-stream');
 const babel = require('gulp-babel');
 const imagemin = require('gulp-imagemin');
 const changed = require('gulp-changed');
+const replace = require('gulp-replace');
 
 
 gulp.task('clean:dev', function(done){
@@ -42,6 +43,12 @@ gulp.task('html:dev', function(){
         .pipe(changed('./build',{hasChanged: changed.compareContents}))
         .pipe(plumber(plumberConfig('HTML')))
         .pipe(fileinclude(includeFileSetting))
+        .pipe(
+			replace(
+				/(?<=src=|href=|srcset=)(['"])(\.(\.)?\/)*(img|images|fonts|css|scss|sass|js|files|audio|video)(\/[^\/'"]+(\/))?([^'"]*)\1/gi,
+				'$1./$4$5$7$1'
+			)
+        )
         .pipe(gulp.dest('./build'))
 });
 
@@ -52,6 +59,12 @@ gulp.task('sass:dev', function(){
         .pipe(sourcemaps.init())
         .pipe(sassGlob())
         .pipe(sass())
+        .pipe(
+			replace(
+				/(['"]?)(\.\.\/)+(img|images|fonts|css|scss|sass|js|files|audio|video)(\/[^\/'"]+(\/))?([^'"]*)\1/gi,
+				'$1$2$3$4$6$1'
+			)
+		)
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('./build/css/'))
 });
