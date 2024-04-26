@@ -22,6 +22,7 @@ const notify = require('gulp-notify');
 const webpack = require('webpack-stream');
 const babel = require('gulp-babel');
 const changed = require('gulp-changed');
+const replace = require('gulp-replace');
 
 const webp = require('gulp-webp');
 const imagemin = require('gulp-imagemin');
@@ -55,6 +56,12 @@ gulp.task('html:docs', function(){
         .pipe(changed('./docs', {hasChanged: changed.compareContents}))
         .pipe(plumber(plumberConfig('HTML')))
         .pipe(fileinclude(includeFileSetting))
+        .pipe(
+			replace(
+				/(?<=src=|href=|srcset=)(['"])(\.(\.)?\/)*(img|images|fonts|css|scss|sass|js|files|audio|video)(\/[^\/'"]+(\/))?([^'"]*)\1/gi,
+				'$1./$4$5$7$1'
+			)
+        )
         .pipe(webpHtml())
         .pipe(htmlclean())
         .pipe(gulp.dest('./docs'))
@@ -68,6 +75,12 @@ gulp.task('sass:docs', function(){
         .pipe(sassGlob())
         .pipe(webpCss())
         .pipe(sass())
+        .pipe(
+			replace(
+				/(['"]?)(\.\.\/)+(img|images|fonts|css|scss|sass|js|files|audio|video)(\/[^\/'"]+(\/))?([^'"]*)\1/gi,
+				'$1$2$3$4$6$1'
+			)
+		)
         .pipe(csso())
         .pipe(groupMedia())
         .pipe(gulp.dest('./docs/css/'))
